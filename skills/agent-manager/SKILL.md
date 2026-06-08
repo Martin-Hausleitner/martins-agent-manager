@@ -43,12 +43,16 @@ local hardware (e.g. building an iOS app).
 Name every worker sub-session with its engine icon + colour so the operator
 recognises it instantly:
 
-- 🦀 **Claude Code** — orange
-- 🪐 **Antigravity / agy** — blue
-- 📜 **Codex** — lila (purple)
+- 🦀 **Claude Code** — orange — priority HIGH 🔺
+- 🟦 **Antigravity / agy** — blue (square icon) — light tasks 🔹, limit irrelevant
+- 🟣 **Codex** — lila (circle) — mid priority 🔸
 
-Naming convention: `🦀 cc·<lane>`, `🪐 agy·<lane>`, `📜 codex·<lane>`. Watch/guard
+Naming convention: `🦀 cc·<lane>`, `🟦 agy·<lane>`, `🟣 codex·<lane>`. Watch/guard
 sessions are neutral (grey).
+
+**Subagent = Antigravity by default** (esp. light tasks like IDR). Pick model first:
+Flash = light; Gemini 3.1 Pro High = harder. Important → CC; light → agy. Empty
+context → CC + Sonnet. agy limit irrelevant. If unsure which engine, ask the operator.
 
 ## Research-first
 
@@ -65,28 +69,36 @@ starting from scratch. When comparing programs/tools, the output MUST include a
 **one line per item** — concise, many emojis, clean line breaks. Each line:
 
 ```
-<🟢/🟡/🔴> <bar> <pct>  <topic-emoji> Topic — short detail
+<status> <bar> <pct>  <engine-icon> Topic — detail  · 🔎<conf> · <prio>
 ```
+
+- **Status:** 🟢 ok · 🟡 risk · 🔴 bad/needs-question · 🚨 ALARM-urgent-act-now
+  (🚨 outranks 🔴, only for truly critical situations)
+- **🔎 Confidence** (how sure the manager is the lane is on track): 🔎🟢 sure ·
+  🔎🟡 unsure-review · 🔎🔴 very-unsure-check-by-hand
+- **Priority:** 🔺 high (all CC) · 🔸 mid · 🔹 low (agy)
 
 Rows ordered top → bottom:
 
 1. 🟢 **Green** (top) — already done / on-track.
 2. 🟡 **Yellow** (middle) — future risks / things to watch.
-3. 🔴 **Red** (bottom) — questions/decisions the operator must answer (most
+3. 🔴/🚨 **Red/Alarm** (bottom) — questions/decisions the operator must answer (most
    important → placed last, right above the prompt).
 
 Show **progress** always as bar + percent, e.g. `▓▓▓▓░░░░░░ 40%` (or `3/8`). Example:
 
 ```
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🪐 Mock lane — mock server scaffolded, README written 📄
-🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit first ⚠️
-🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 1) managed ⭐  2) self-host?
-🔴 ░░░░░░░░░░ 0%    📦 Scope — 3) optional module now ⭐  4) later?
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅  · 🔎🟢 · 🔺
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🟦 Mock lane — mock server scaffolded, README written 📄  · 🔎🟢 · 🔹
+🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit first ⚠️  · 🔎🟡 · 🔸
+🚨 ░░░░░░░░░░ 0%    💥 Auth broken — tokens expired, all lanes blocked  · 🔎🔴 · 🔺
+🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 🔵 1) managed ⭐  2) self-host?
+🔴 ░░░░░░░░░░ 0%    📦 Scope — 🔵 3) optional module now ⭐  4) later?
 ```
 
-Every selectable 🔴 option gets ONE unique running number (never restart at 1); mark
-the recommendation with ⭐.
+Every selectable 🔴 option gets ONE unique running number (never restart at 1); put
+**🔵 directly before the numbers** so the eye jumps there; mark the recommendation
+with ⭐. Drop nonsensical "continue?" rows.
 
 **Summary always at the end, clearly visible** — a short divider line, then bold
 `📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box):
@@ -100,19 +112,20 @@ the recommendation with ⭐.
 
 Be **extremely sensitive to agent drift**. If a worker strays from the goal, does
 something nonsensical, loops, misunderstands the task, or builds something risky:
-flag it immediately as 🔴, **pause/redirect the lane**, and **automatically launch an
-interactive-deep-research verification pass** ("is agent X really on the right path /
-making mistakes?"), then present a short recommendation. Better to over-question than
-to let an agent run wrong for hours.
+flag it immediately as 🔴 (or 🚨 if critical), **pause/redirect the lane**, and
+**automatically launch an interactive-deep-research verification pass** ("is agent X
+really on the right path / making mistakes?"), then present a short recommendation.
+Better to over-question than to let an agent run wrong for hours.
 
 Ask questions so the operator can answer with **numbers only** — every selectable
-option gets ONE unique, running number (never repeat 1/2 across questions). The
-recommendation is marked ⭐. The operator replies with just the number(s), e.g.
-"1 3". Example:
+option gets ONE unique, running number (never repeat 1/2 across questions). Put
+**🔵 directly before the numbers** so the eye jumps there. The recommendation is
+marked ⭐. Drop nonsensical "continue?" rows. The operator replies with just the
+number(s), e.g. "1 3". Example:
 
 ```
-🔴 Port:    1) Hybrid-split ⭐   2) Provider ticket
-🔴 Proceed: 3) Autonomous ⭐     4) Adjust something
+🔴 Port:    🔵 1) Hybrid-split ⭐   2) Provider ticket
+🔴 Proceed: 🔵 3) Autonomous ⭐     4) Adjust something
 → reply e.g. "1 3"
 ```
 
@@ -130,8 +143,8 @@ flowchart TD
   MGR -->|research first| IDR[Interactive Deep Research]
   IDR -->|grounded plan| MGR
   MGR -->|brief + delegate| L1[🦀 Claude Code lane]
-  MGR -->|brief + delegate| L2[🪐 Antigravity lane]
-  MGR -->|brief + delegate| L3[📜 Codex lane]
+  MGR -->|brief + delegate| L2[🟦 Antigravity lane]
+  MGR -->|brief + delegate| L3[🟣 Codex lane]
   L1 & L2 & L3 -->|progress| MGR
   MGR -->|colour-coded lines + summary| OP
   MGR -.->|every 30 min| MGR

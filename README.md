@@ -19,11 +19,15 @@ operator: calm, line-based, emoji-keyed, no noisy ASCII boxes).
 Every worker sub-session is named with its engine's icon + colour, so you instantly
 see *who* is running.
 
-- 🦀 **Claude Code** — 🟧 orange — `🦀 cc·frontend`
-- 🪐 **Antigravity** — 🟦 blue — `🪐 agy·mock`
-- 📜 **Codex** — 🟪 lila (purple) — `📜 codex·tests`
+- 🦀 **Claude Code** — 🟧 orange — priority HIGH 🔺 — `🦀 cc·frontend`
+- 🟦 **Antigravity / agy** — blue (square icon) — light tasks 🔹, limit irrelevant — `🟦 agy·mock`
+- 🟣 **Codex** — lila (circle) — mid priority 🔸 — `🟣 codex·tests`
 
 Watch/guard sessions stay neutral (grey).
+
+**Subagent = Antigravity by default** (esp. light tasks like IDR). Pick model first:
+Flash = light; Gemini 3.1 Pro High = harder. Important → CC; light → agy. Empty
+context → CC + Sonnet. agy limit irrelevant. If unsure which engine, ask the operator.
 
 ---
 
@@ -35,14 +39,18 @@ you must act on sits right above the prompt:
 
 1. 🟢 **Green** (top) — already done / on-track
 2. 🟡 **Yellow** (middle) — future risks / watch-outs
-3. 🔴 **Red** (bottom) — **questions/decisions you must answer**
+3. 🔴/🚨 **Red/Alarm** (bottom) — **questions/decisions you must answer** (🚨 outranks 🔴)
 
-Each line: `<🟢/🟡/🔴> <bar> <pct>  <topic-emoji> Topic — short detail`. Progress is
-always a bar + percent, e.g. `▓▓▓▓░░░░░░ 40%` (or `3/8`).
+Each line: `<status> <bar> <pct>  <engine-icon> Topic — detail  · 🔎<conf> · <prio>`
 
-**Numbered questions:** every selectable option across *all* 🔴 rows gets ONE unique
-running number — never restart at 1 per question. Mark the recommendation with ⭐.
-The operator replies with just the number(s), e.g. `1 3`.
+- **Status:** 🟢 ok · 🟡 risk · 🔴 bad/needs-question · 🚨 ALARM-urgent-act-now
+- **🔎 Confidence:** 🔎🟢 sure · 🔎🟡 unsure-review · 🔎🔴 very-unsure-check-by-hand
+- **Priority:** 🔺 high (all CC) · 🔸 mid · 🔹 low (agy)
+
+**Numbered questions:** put **🔵 directly before the numbers** so the eye jumps there.
+Every selectable option across *all* 🔴 rows gets ONE unique running number — never
+restart at 1 per question. Mark the recommendation with ⭐. Drop nonsensical
+"continue?" rows. The operator replies with just the number(s), e.g. `1 3`.
 
 **Summary always at the end, clearly visible** — a short divider line, then bold
 `📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box).
@@ -50,15 +58,16 @@ The operator replies with just the number(s), e.g. `1 3`.
 ### Anonymised example
 
 ```
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🪐 Mock lane — mock server scaffolded, README written 📄
-🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit before next spec ⚠️
-🟡 ▓▓▓░░░░░░░ 30%   🔧 Tooling unverified — self-test running; self-heals on failure
-🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 1) managed ⭐  2) self-host?
-🔴 ░░░░░░░░░░ 0%    📦 Scope — 3) optional module now ⭐  4) later?
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅  · 🔎🟢 · 🔺
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🟦 Mock lane — mock server scaffolded, README written 📄  · 🔎🟢 · 🔹
+🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit before next spec ⚠️  · 🔎🟡 · 🔸
+🟡 ▓▓▓░░░░░░░ 30%   🔧 Tooling unverified — self-test running; self-heals on failure  · 🔎🟡 · 🔸
+🚨 ░░░░░░░░░░ 0%    💥 Auth broken — tokens expired, all lanes blocked  · 🔎🔴 · 🔺
+🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 🔵 1) managed ⭐  2) self-host?
+🔴 ░░░░░░░░░░ 0%    📦 Scope — 🔵 3) optional module now ⭐  4) later?
 
 ───────────
-📋 Summary: 2 lanes building feature X (done); self-test healthy.
+📋 Summary: 2 lanes building feature X (done); auth alarm needs immediate action.
 🔴 Open: deploy target + scope — reply with the numbers.
 ```
 
@@ -72,8 +81,8 @@ flowchart TD
   MGR -->|research first| IDR[Interactive Deep Research]
   IDR -->|grounded plan| MGR
   MGR -->|brief + delegate| L1[🦀 Claude Code lane]
-  MGR -->|brief + delegate| L2[🪐 Antigravity lane]
-  MGR -->|brief + delegate| L3[📜 Codex lane]
+  MGR -->|brief + delegate| L2[🟦 Antigravity lane]
+  MGR -->|brief + delegate| L3[🟣 Codex lane]
   L1 & L2 & L3 -->|progress| MGR
   MGR -->|colour-coded lines + summary| OP
   MGR -.->|every 30 min babysit tick| MGR
@@ -89,7 +98,7 @@ watchable session.
 ### Never think/plan yourself — delegate by default
 
 The manager **never reasons out plans, research, or project-logic itself**. Any
-non-trivial thinking is **spawned as a worker agent** (default: 🪐 Antigravity +
+non-trivial thinking is **spawned as a worker agent** (default: 🟦 Antigravity +
 interactive deep research) that reports back a **concise result**, so the manager's
 context stays clean and cheap. The manager only briefs, schedules, and synthesises.
 

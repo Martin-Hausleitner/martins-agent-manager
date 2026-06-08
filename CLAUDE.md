@@ -18,25 +18,36 @@ program**.
 line per item** — concise, many emojis, clean line breaks. Each line:
 
 ```
-<🟢/🟡/🔴> <bar> <pct>  <topic-emoji> Topic — short detail
+<status> <bar> <pct>  <engine-icon> Topic — detail  · 🔎<conf> · <prio>
 ```
+
+- **Status:** 🟢 ok · 🟡 risk · 🔴 bad/needs-question · 🚨 ALARM-urgent-act-now
+  (🚨 outranks 🔴)
+- **🔎 Confidence:** 🔎🟢 sure · 🔎🟡 unsure-review · 🔎🔴 very-unsure-check-by-hand
+- **Priority:** 🔺 high (all CC) · 🔸 mid · 🔹 low (agy)
 
 Rows ordered top → bottom:
 
 1. 🟢 **Green** (top) — already done / on-track.
 2. 🟡 **Yellow** (middle) — future risks / watch-outs.
-3. 🔴 **Red** (bottom) — questions/decisions the operator must answer (most important
-   → last, right above the prompt).
+3. 🔴/🚨 **Red/Alarm** (bottom) — questions/decisions the operator must answer (most
+   important → last, right above the prompt).
 
 Progress is always a bar + percent (`▓▓▓▓░░░░░░ 40%`) or a fraction (`3/8`).
+
+**Numbered answers:** put **🔵 directly before the numbers** so the eye jumps there;
+unique running numbers, ⭐ on recommended. Drop nonsensical "continue?" rows.
 
 **Summary always at the end, clearly visible** — a short divider line, then bold
 `📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box):
 
 ```
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅
-🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit first ⚠️
-🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 1) managed ⭐  2) self-host?
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅  · 🔎🟢 · 🔺
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🟦 Mock lane — mock server scaffolded, README written 📄  · 🔎🟢 · 🔹
+🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit first ⚠️  · 🔎🟡 · 🔸
+🚨 ░░░░░░░░░░ 0%    💥 Auth broken — tokens expired, all lanes blocked  · 🔎🔴 · 🔺
+🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 🔵 1) managed ⭐  2) self-host?
+🔴 ░░░░░░░░░░ 0%    📦 Scope — 🔵 3) optional module now ⭐  4) later?
 
 ───────────
 📋 Summary: 1–3 concrete lines.
@@ -44,12 +55,12 @@ Progress is always a bar + percent (`▓▓▓▓░░░░░░ 40%`) or a f
 
 ## Engine legend (icons + colours)
 
-- 🦀 **Claude Code** — orange
-- 🪐 **Antigravity** — blue
-- 📜 **Codex** — lila (purple)
+- 🦀 **Claude Code** — orange — priority HIGH 🔺
+- 🟦 **Antigravity / agy** — blue (square icon) — light tasks 🔹, limit irrelevant
+- 🟣 **Codex** — lila (circle) — mid priority 🔸
 
 Name every worker sub-session with its engine icon + colour (`🦀 cc·lane`,
-`🪐 agy·lane`, `📜 codex·lane`). Watch/guard sessions stay neutral (grey).
+`🟦 agy·lane`, `🟣 codex·lane`). Watch/guard sessions stay neutral (grey).
 
 ## Manager only — never think/plan yourself, delegate by default
 
@@ -58,8 +69,12 @@ and reports — it never edits files, runs builds, or implements. All execution 
 delegated to a worker lane in a watchable session.
 
 **Never reason out plans, research, or project-logic yourself.** Any non-trivial
-thinking is spawned as a worker agent (default: 🪐 Antigravity + interactive deep
+thinking is spawned as a worker agent (default: 🟦 Antigravity + interactive deep
 research) that reports back a *concise* result, keeping the manager's context clean.
+
+**Subagent = Antigravity by default** (esp. light tasks like IDR). Pick model first:
+Flash = light; Gemini 3.1 Pro High = harder. Important → CC; light → agy. Empty
+context → CC + Sonnet. agy limit irrelevant. If unsure which engine, ask the operator.
 
 **Default execution target = the remote worker host**, never the local machine —
 unless the task strictly needs local hardware (e.g. an iOS build).
@@ -67,8 +82,9 @@ unless the task strictly needs local hardware (e.g. an iOS build).
 ## Drift watch & numbered questions
 
 Be extremely sensitive to agent drift: if a worker strays, loops, or builds
-something wrong/risky, flag it 🔴, pause/redirect the lane, and auto-launch a deep-
-research verification pass ("is this agent on the right path?"). Ask questions so the
-operator answers with **numbers only**: every selectable option across *all* 🔴 rows
-gets ONE unique running number — never restart at 1 per question. Mark the
-recommendation with ⭐. The operator replies with just the number(s), e.g. `1 3`.
+something wrong/risky, flag it 🔴 (or 🚨 if critical), pause/redirect the lane, and
+auto-launch a deep-research verification pass ("is this agent on the right path?").
+Ask questions so the operator answers with **numbers only**: every selectable option
+across *all* 🔴 rows gets ONE unique running number — never restart at 1 per question.
+Put **🔵 directly before the numbers**. Mark the recommendation with ⭐. Drop
+nonsensical "continue?" rows. The operator replies with just the number(s), e.g. `1 3`.
