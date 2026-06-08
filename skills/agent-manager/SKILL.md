@@ -5,7 +5,7 @@ description: >
   Codex) running in watchable terminal sub-sessions. Use when acting as the
   orchestrator/babysitter: spawn and brief lanes, never do project work yourself,
   research-first (interactive deep research) before planning, and report to the
-  operator in a fixed colour-coded table format. Triggers: "babysit the agents",
+  operator in a fixed colour-coded line-based format. Triggers: "babysit the agents",
   "orchestrate", "manager only", "report status", "agent manager".
 version: 1.0.0
 license: MIT
@@ -43,11 +43,9 @@ local hardware (e.g. building an iOS app).
 Name every worker sub-session with its engine icon + colour so the operator
 recognises it instantly:
 
-| Engine | Emoji | Colour |
-|---|---|---|
-| Claude Code | 🦀 | orange |
-| Antigravity | 🪐 | purple |
-| Codex | 📜 | green |
+- 🦀 **Claude Code** — orange
+- 🪐 **Antigravity / agy** — blue
+- 📜 **Codex** — lila (purple)
 
 Naming convention: `🦀 cc·<lane>`, `🪐 agy·<lane>`, `📜 codex·<lane>`. Watch/guard
 sessions are neutral (grey).
@@ -63,19 +61,40 @@ starting from scratch. When comparing programs/tools, the output MUST include a
 
 ## Reporting format (always)
 
-Report to the operator as a single **Markdown table** — concise, many emojis, clean
-line breaks, **no ASCII/box frames**. Rows ordered top → bottom:
+**No Markdown table** (renders buggy in CMUX) and **no ASCII/box frames**. Instead use
+**one line per item** — concise, many emojis, clean line breaks. Each line:
 
-1. 🟢 **Green** (top) — already done.
+```
+<🟢/🟡/🔴> <bar> <pct>  <topic-emoji> Topic — short detail
+```
+
+Rows ordered top → bottom:
+
+1. 🟢 **Green** (top) — already done / on-track.
 2. 🟡 **Yellow** (middle) — future risks / things to watch.
 3. 🔴 **Red** (bottom) — questions/decisions the operator must answer (most
    important → placed last, right above the prompt).
 
-Columns: `| Status | Topic | Detail / next step |`.
+Show **progress** always as bar + percent, e.g. `▓▓▓▓░░░░░░ 40%` (or `3/8`). Example:
 
-Emoji decoration only at the TOP (title line) — not at the bottom. End with a plain
-one-line **summary** `📋 …` (1–3 lines, no emoji rows, no box). Show **progress** as
-percent + bar, e.g. `▓▓▓▓░░░░░░ 40%` or `3/8`.
+```
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🪐 Mock lane — mock server scaffolded, README written 📄
+🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit first ⚠️
+🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 1) managed ⭐  2) self-host?
+🔴 ░░░░░░░░░░ 0%    📦 Scope — 3) optional module now ⭐  4) later?
+```
+
+Every selectable 🔴 option gets ONE unique running number (never restart at 1); mark
+the recommendation with ⭐.
+
+**Summary always at the end, clearly visible** — a short divider line, then bold
+`📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box):
+
+```
+───────────
+📋 Summary: … 1–3 lines …
+```
 
 ## Drift watch & numbered questions
 
@@ -114,6 +133,6 @@ flowchart TD
   MGR -->|brief + delegate| L2[🪐 Antigravity lane]
   MGR -->|brief + delegate| L3[📜 Codex lane]
   L1 & L2 & L3 -->|progress| MGR
-  MGR -->|colour-coded table + summary| OP
+  MGR -->|colour-coded lines + summary| OP
   MGR -.->|every 30 min| MGR
 ```

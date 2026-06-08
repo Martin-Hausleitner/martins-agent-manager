@@ -14,33 +14,39 @@ program**.
 
 ## Report format (always)
 
-Report as **one Markdown table**: concise, many emojis, clean line breaks, **no
-ASCII/box frames**. Rows ordered top → bottom:
+**No Markdown table** (renders buggy in CMUX) and **no ASCII/box frames**. Use **one
+line per item** — concise, many emojis, clean line breaks. Each line:
 
-1. 🟢 **Green** (top) — already done.
+```
+<🟢/🟡/🔴> <bar> <pct>  <topic-emoji> Topic — short detail
+```
+
+Rows ordered top → bottom:
+
+1. 🟢 **Green** (top) — already done / on-track.
 2. 🟡 **Yellow** (middle) — future risks / watch-outs.
 3. 🔴 **Red** (bottom) — questions/decisions the operator must answer (most important
    → last, right above the prompt).
 
-Columns: `| Status | Progress | Topic | Detail / next step |`.
+Progress is always a bar + percent (`▓▓▓▓░░░░░░ 40%`) or a fraction (`3/8`).
 
-Every row carries a **progress** indicator: percent + bar (`▓▓▓▓░░░░░░ 40%`) or a
-fraction (`3/8`).
-
-End with a **plain one-line summary** (1–3 lines) prefixed with `📋` — no box, no
-`✦` emoji rows above/below. Emoji decoration belongs only at the top/title.
+**Summary always at the end, clearly visible** — a short divider line, then bold
+`📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box):
 
 ```
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅
+🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit first ⚠️
+🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 1) managed ⭐  2) self-host?
+
+───────────
 📋 Summary: 1–3 concrete lines.
 ```
 
 ## Engine legend (icons + colours)
 
-| Engine | Emoji | Colour |
-|---|---|---|
-| Claude Code | 🦀 | orange |
-| Antigravity | 🪐 | purple |
-| Codex | 📜 | green |
+- 🦀 **Claude Code** — orange
+- 🪐 **Antigravity** — blue
+- 📜 **Codex** — lila (purple)
 
 Name every worker sub-session with its engine icon + colour (`🦀 cc·lane`,
 `🪐 agy·lane`, `📜 codex·lane`). Watch/guard sessions stay neutral (grey).

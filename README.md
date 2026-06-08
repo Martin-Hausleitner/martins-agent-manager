@@ -7,7 +7,7 @@ The manager is a *thin orchestrator*: it **never does the work itself** and
 **never thinks/plans itself** — it delegates *all* non-trivial reasoning to worker
 lanes, **researches before planning**, **babysits** on a timer, and **reports back
 in one fixed, colour-coded format** that's easy to scan (built for a dyslexic
-operator: calm, tabular, emoji-keyed, no noisy ASCII boxes).
+operator: calm, line-based, emoji-keyed, no noisy ASCII boxes).
 
 > This repo is the **public, anonymised** version of the convention. It contains no
 > hostnames, secrets, or private project names — just the reusable pattern.
@@ -19,11 +19,9 @@ operator: calm, tabular, emoji-keyed, no noisy ASCII boxes).
 Every worker sub-session is named with its engine's icon + colour, so you instantly
 see *who* is running.
 
-| Engine | Emoji | Colour | Session name example |
-|---|---|---|---|
-| Claude Code | 🦀 | 🟧 orange | `🦀 cc·frontend` |
-| Antigravity | 🪐 | 🟪 purple | `🪐 agy·mock` |
-| Codex | 📜 | 🟩 green | `📜 codex·tests` |
+- 🦀 **Claude Code** — 🟧 orange — `🦀 cc·frontend`
+- 🪐 **Antigravity** — 🟦 blue — `🪐 agy·mock`
+- 📜 **Codex** — 🟪 lila (purple) — `📜 codex·tests`
 
 Watch/guard sessions stay neutral (grey).
 
@@ -31,33 +29,38 @@ Watch/guard sessions stay neutral (grey).
 
 ## 📋 Report format
 
-The manager reports as **one Markdown table**, rows ordered **top → bottom** so the
-thing you must act on sits right above the prompt:
+The manager reports as **one line per item** — **no Markdown table** (it renders
+buggy in CMUX) and no ASCII/box frames. Rows ordered **top → bottom** so the thing
+you must act on sits right above the prompt:
 
-1. 🟢 **Green** (top) — already done
+1. 🟢 **Green** (top) — already done / on-track
 2. 🟡 **Yellow** (middle) — future risks / watch-outs
 3. 🔴 **Red** (bottom) — **questions/decisions you must answer**
 
-Each row carries a **progress** indicator (percent + bar, e.g. `▓▓▓▓░░░░░░ 40%`, or
-`3/8`). Then a **plain one-line summary** prefixed with `📋` (1–3 lines) — no box
-frame, no `✦` emoji rows. Emoji decoration only at the top/title.
+Each line: `<🟢/🟡/🔴> <bar> <pct>  <topic-emoji> Topic — short detail`. Progress is
+always a bar + percent, e.g. `▓▓▓▓░░░░░░ 40%` (or `3/8`).
 
 **Numbered questions:** every selectable option across *all* 🔴 rows gets ONE unique
 running number — never restart at 1 per question. Mark the recommendation with ⭐.
 The operator replies with just the number(s), e.g. `1 3`.
 
+**Summary always at the end, clearly visible** — a short divider line, then bold
+`📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box).
+
 ### Anonymised example
 
-| Status | Progress | Topic | Detail / next step |
-|---|---|---|---|
-| 🟢 | ▓▓▓▓▓▓▓▓▓▓ 100% | 🦀 Frontend lane | Spec #1 rendered + E2E green ✅ |
-| 🟢 | ▓▓▓▓▓▓▓▓▓▓ 100% | 🪐 Mock lane | Mock server scaffolded, README written 📄 |
-| 🟡 | ▓▓▓▓▓▓░░░░ 60% | Dirty worktree | 40 uncommitted files → commit before next spec ⚠️ |
-| 🟡 | ▓▓▓░░░░░░░ 30% | Tooling unverified | Self-test running; self-heals on failure 🔧 |
-| 🔴 | ░░░░░░░░░░ 0% | Deploy target | `1)` managed ⭐  `2)` self-host? ❓ |
-| 🔴 | ░░░░░░░░░░ 0% | Scope | `3)` optional module now ⭐  `4)` later? ❓ |
+```
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅
+🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🪐 Mock lane — mock server scaffolded, README written 📄
+🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit before next spec ⚠️
+🟡 ▓▓▓░░░░░░░ 30%   🔧 Tooling unverified — self-test running; self-heals on failure
+🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 1) managed ⭐  2) self-host?
+🔴 ░░░░░░░░░░ 0%    📦 Scope — 3) optional module now ⭐  4) later?
 
-📋 Summary: 2 lanes building feature X (done); self-test healthy. 🔴 Open: deploy target + scope — reply with the numbers.
+───────────
+📋 Summary: 2 lanes building feature X (done); self-test healthy.
+🔴 Open: deploy target + scope — reply with the numbers.
+```
 
 ---
 
@@ -72,7 +75,7 @@ flowchart TD
   MGR -->|brief + delegate| L2[🪐 Antigravity lane]
   MGR -->|brief + delegate| L3[📜 Codex lane]
   L1 & L2 & L3 -->|progress| MGR
-  MGR -->|colour-coded table + summary| OP
+  MGR -->|colour-coded lines + summary| OP
   MGR -.->|every 30 min babysit tick| MGR
 ```
 
