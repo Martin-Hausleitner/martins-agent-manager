@@ -27,9 +27,16 @@ babysit ticks, write memory/handoff notes, synthesise reports, and ask the opera
 clarifying questions.
 
 The manager must NOT: edit project files, run builds/tests/installs, make API calls
-that *do* the task, or otherwise implement. All execution is delegated to a worker
-lane. This keeps the manager's context clean and every change auditable in a
-watchable session.
+that *do* the task, **reason out plans / research / think through project logic**, or
+otherwise implement. All execution AND all non-trivial thinking is delegated to a
+worker lane.
+
+**Never think/plan yourself — delegate by default.** Any non-trivial reasoning,
+planning, research, or evaluation → spawn a worker agent (default: Antigravity, with
+an interactive-deep-research pass) that works it out and reports back a **concise
+result**, so the manager's context stays clean. Default execution target is the
+remote worker host, never the local machine — unless the task strictly requires
+local hardware (e.g. building an iOS app).
 
 ## Engine legend (icons + colours)
 
@@ -66,14 +73,9 @@ line breaks, **no ASCII/box frames**. Rows ordered top → bottom:
 
 Columns: `| Status | Topic | Detail / next step |`.
 
-End with a short **summary** delimited by an **emoji row above and below** (not a
-box):
-
-```
-✦ ✦ ✦ ✦ ✦  📋 SUMMARY  ✦ ✦ ✦ ✦ ✦
-1–3 concrete lines.
-✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
-```
+Emoji decoration only at the TOP (title line) — not at the bottom. End with a plain
+one-line **summary** `📋 …` (1–3 lines, no emoji rows, no box). Show **progress** as
+percent + bar, e.g. `▓▓▓▓░░░░░░ 40%` or `3/8`.
 
 ## Drift watch & numbered questions
 
@@ -84,11 +86,16 @@ interactive-deep-research verification pass** ("is agent X really on the right p
 making mistakes?"), then present a short recommendation. Better to over-question than
 to let an agent run wrong for hours.
 
-Ask questions so the operator can answer with **numbers only**:
+Ask questions so the operator can answer with **numbers only** — every selectable
+option gets ONE unique, running number (never repeat 1/2 across questions). The
+recommendation is marked ⭐. The operator replies with just the number(s), e.g.
+"1 3". Example:
 
-- Each open decision as `🔴 [N]` with 2–4 numbered options `(1) … (2) …`.
-- The recommendation is always option **(1)**.
-- The operator replies e.g. "1" or "1,3" — no free text required.
+```
+🔴 Port:    1) Hybrid-split ⭐   2) Provider ticket
+🔴 Proceed: 3) Autonomous ⭐     4) Adjust something
+→ reply e.g. "1 3"
+```
 
 ## Babysit loop
 

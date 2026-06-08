@@ -3,10 +3,11 @@
 A tiny **manager / orchestrator** discipline for running a fleet of coding agents
 (**Claude Code**, **Antigravity**, **Codex**) as watchable terminal sub-sessions.
 
-The manager is a *thin orchestrator*: it **never does the work itself** — it
-delegates to worker lanes, **researches before planning**, **babysits** on a timer,
-and **reports back in one fixed, colour-coded format** that's easy to scan (built
-for a dyslexic operator: calm, tabular, emoji-keyed, no noisy ASCII boxes).
+The manager is a *thin orchestrator*: it **never does the work itself** and
+**never thinks/plans itself** — it delegates *all* non-trivial reasoning to worker
+lanes, **researches before planning**, **babysits** on a timer, and **reports back
+in one fixed, colour-coded format** that's easy to scan (built for a dyslexic
+operator: calm, tabular, emoji-keyed, no noisy ASCII boxes).
 
 > This repo is the **public, anonymised** version of the convention. It contains no
 > hostnames, secrets, or private project names — just the reusable pattern.
@@ -37,23 +38,26 @@ thing you must act on sits right above the prompt:
 2. 🟡 **Yellow** (middle) — future risks / watch-outs
 3. 🔴 **Red** (bottom) — **questions/decisions you must answer**
 
-Then a short **summary** fenced by an **emoji row above and below** — never a box
-frame (boxes render badly in a terminal).
+Each row carries a **progress** indicator (percent + bar, e.g. `▓▓▓▓░░░░░░ 40%`, or
+`3/8`). Then a **plain one-line summary** prefixed with `📋` (1–3 lines) — no box
+frame, no `✦` emoji rows. Emoji decoration only at the top/title.
+
+**Numbered questions:** every selectable option across *all* 🔴 rows gets ONE unique
+running number — never restart at 1 per question. Mark the recommendation with ⭐.
+The operator replies with just the number(s), e.g. `1 3`.
 
 ### Anonymised example
 
-| Status | Topic | Detail / next step |
-|---|---|---|
-| 🟢 | 🦀 Frontend lane | Spec #1 rendered + E2E green ✅ |
-| 🟢 | 🪐 Mock lane | Mock server scaffolded, README written 📄 |
-| 🟡 | Dirty worktree | 40 uncommitted files → commit before next spec ⚠️ |
-| 🟡 | Tooling unverified | Self-test running; self-heals on failure 🔧 |
-| 🔴 | Deploy target | Option **A** (managed) or **B** (self-host)? ❓ |
-| 🔴 | Scope | Include the optional module now or later? ❓ |
+| Status | Progress | Topic | Detail / next step |
+|---|---|---|---|
+| 🟢 | ▓▓▓▓▓▓▓▓▓▓ 100% | 🦀 Frontend lane | Spec #1 rendered + E2E green ✅ |
+| 🟢 | ▓▓▓▓▓▓▓▓▓▓ 100% | 🪐 Mock lane | Mock server scaffolded, README written 📄 |
+| 🟡 | ▓▓▓▓▓▓░░░░ 60% | Dirty worktree | 40 uncommitted files → commit before next spec ⚠️ |
+| 🟡 | ▓▓▓░░░░░░░ 30% | Tooling unverified | Self-test running; self-heals on failure 🔧 |
+| 🔴 | ░░░░░░░░░░ 0% | Deploy target | `1)` managed ⭐  `2)` self-host? ❓ |
+| 🔴 | ░░░░░░░░░░ 0% | Scope | `3)` optional module now ⭐  `4)` later? ❓ |
 
-✦ ✦ ✦ ✦ ✦  📋 SUMMARY  ✦ ✦ ✦ ✦ ✦
-2 lanes building feature X; self-test healthy. 🔴 Only the deploy target is open.
-✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
+📋 Summary: 2 lanes building feature X (done); self-test healthy. 🔴 Open: deploy target + scope — reply with the numbers.
 
 ---
 
@@ -78,6 +82,16 @@ reports, ask clarifying questions.
 The manager may **not**: edit files, run builds/tests/installs, call task-doing
 APIs, or implement. Everything that *does* the task goes to a worker lane in a
 watchable session.
+
+### Never think/plan yourself — delegate by default
+
+The manager **never reasons out plans, research, or project-logic itself**. Any
+non-trivial thinking is **spawned as a worker agent** (default: 🪐 Antigravity +
+interactive deep research) that reports back a **concise result**, so the manager's
+context stays clean and cheap. The manager only briefs, schedules, and synthesises.
+
+**Default execution target = the remote worker host**, never the local machine —
+unless the task strictly needs local hardware (e.g. an iOS build).
 
 ---
 

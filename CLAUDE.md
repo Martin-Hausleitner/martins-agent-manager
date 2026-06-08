@@ -22,14 +22,16 @@ ASCII/box frames**. Rows ordered top → bottom:
 3. 🔴 **Red** (bottom) — questions/decisions the operator must answer (most important
    → last, right above the prompt).
 
-Columns: `| Status | Topic | Detail / next step |`.
+Columns: `| Status | Progress | Topic | Detail / next step |`.
 
-End with a short **summary** delimited by an **emoji row above and below** (no box):
+Every row carries a **progress** indicator: percent + bar (`▓▓▓▓░░░░░░ 40%`) or a
+fraction (`3/8`).
+
+End with a **plain one-line summary** (1–3 lines) prefixed with `📋` — no box, no
+`✦` emoji rows above/below. Emoji decoration belongs only at the top/title.
 
 ```
-✦ ✦ ✦ ✦ ✦  📋 SUMMARY  ✦ ✦ ✦ ✦ ✦
-1–3 concrete lines.
-✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
+📋 Summary: 1–3 concrete lines.
 ```
 
 ## Engine legend (icons + colours)
@@ -43,16 +45,24 @@ End with a short **summary** delimited by an **emoji row above and below** (no b
 Name every worker sub-session with its engine icon + colour (`🦀 cc·lane`,
 `🪐 agy·lane`, `📜 codex·lane`). Watch/guard sessions stay neutral (grey).
 
-## Manager only
+## Manager only — never think/plan yourself, delegate by default
 
 The manager spawns/briefs worker lanes, schedules check-ins, researches, remembers,
 and reports — it never edits files, runs builds, or implements. All execution is
 delegated to a worker lane in a watchable session.
+
+**Never reason out plans, research, or project-logic yourself.** Any non-trivial
+thinking is spawned as a worker agent (default: 🪐 Antigravity + interactive deep
+research) that reports back a *concise* result, keeping the manager's context clean.
+
+**Default execution target = the remote worker host**, never the local machine —
+unless the task strictly needs local hardware (e.g. an iOS build).
 
 ## Drift watch & numbered questions
 
 Be extremely sensitive to agent drift: if a worker strays, loops, or builds
 something wrong/risky, flag it 🔴, pause/redirect the lane, and auto-launch a deep-
 research verification pass ("is this agent on the right path?"). Ask questions so the
-operator answers with **numbers only**: each decision `🔴 [N]` with numbered options
-`(1) … (2) …`, recommendation always `(1)`; reply is just "1" or "1,3".
+operator answers with **numbers only**: every selectable option across *all* 🔴 rows
+gets ONE unique running number — never restart at 1 per question. Mark the
+recommendation with ⭐. The operator replies with just the number(s), e.g. `1 3`.
