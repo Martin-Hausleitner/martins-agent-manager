@@ -63,71 +63,76 @@ starting from scratch. When comparing programs/tools, the output MUST include a
 **Feature Matrix**: one row per program, columns for the key criteria, and a
 **GitHub link for every compared program**.
 
-## Reporting format (always)
+## Reporting format (always) — Variant A: sectioned report
 
-**No Markdown table** (renders buggy in CMUX) and **no ASCII/box frames**. Instead use
-**one line per item** — concise, many emojis, clean line breaks. Each line:
-
-```
-<status> <bar> <pct>  <engine-icon> Topic — detail  · 🔎<conf> · <prio>
-```
-
-- **Status:** 🟢 ok · 🟡 risk · 🔴 bad/needs-question · 🚨 ALARM-urgent-act-now
-  (🚨 outranks 🔴, only for truly critical situations)
-- **🔎 Confidence** (how sure the manager is the lane is on track): 🔎🟢 sure ·
-  🔎🟡 unsure-review · 🔎🔴 very-unsure-check-by-hand
-- **Priority:** 🔺 high (all CC) · 🔸 mid · 🔹 low (agy)
-
-Rows ordered top → bottom:
-
-1. 🟢 **Green** (top) — already done / on-track.
-2. 🟡 **Yellow** (middle) — future risks / things to watch.
-3. 🔴/🚨 **Red/Alarm** (bottom) — questions/decisions the operator must answer (most
-   important → placed last, right above the prompt).
-
-Show **progress** always as bar + percent, e.g. `▓▓▓▓░░░░░░ 40%` (or `3/8`). Example:
+**No Markdown table** (renders buggy in CMUX) and **no ASCII/box frames**. Use
+**STATUS SECTIONS** with a header emoji, slim indented lines, icon-prefixed, progress
+bar, and a confidence word. Questions are restated at the END with answers in
+[square brackets].
 
 ```
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅  · 🔎🟢 · 🔺
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🟦 Mock lane — mock server scaffolded, README written 📄  · 🔎🟢 · 🔹
-🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit first ⚠️  · 🔎🟡 · 🔸
-🚨 ░░░░░░░░░░ 0%    💥 Auth broken — tokens expired, all lanes blocked  · 🔎🔴 · 🔺
-🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 🔵 1) managed ⭐  2) self-host?
-🔴 ░░░░░░░░░░ 0%    📦 Scope — 🔵 3) optional module now ⭐  4) later?
+✅ ERLEDIGT
+  <engine-icon> Thema       ██████████ 100%
+🔄 LÄUFT
+  <engine-icon> Thema       ██░░░░░░░░  20%   🔎 prüfen
+👀 BITTE DRÜBERSCHAUEN
+  <engine-icon> Thema       ███░░░░░░░  30%   🔎 unsicher
+🚨 ALARM            (nur wenn kritisch)
+  <engine-icon> Thema — was sofort zu tun ist
+
+❓ FRAGEN
+  Q1  <frage>
+      [1] … ⭐   [2] …   [3] …
 ```
 
-Every selectable 🔴 option gets ONE unique running number (never restart at 1); put
-**🔵 directly before the numbers** so the eye jumps there; mark the recommendation
-with ⭐. Drop nonsensical "continue?" rows.
+- **Sections (in order):** ✅ ERLEDIGT · 🔄 LÄUFT · 👀 BITTE DRÜBERSCHAUEN ·
+  🚨 ALARM (only when truly critical, outranks all) · ❓ FRAGEN
+- **Progress:** bar + percent `██████░░░░ 60%` (10-block Unicode bars)
+- **Confidence word** (slim, after bar): `sicher` · `prüfen` · `unsicher`
+- **Questions** restated at the END in ❓ FRAGEN; answers shown in `[square brackets]`
+  with `[1] … ⭐` on the recommended option. Running numbers never restart across
+  questions. Operator replies with just the number(s), e.g. `1 3`.
+- Engine icons: 🦀 cc-orange · 🟦 agy-blue · 🟣 codex-purple. Priority optional
+  (`🔺`/`🔸`/`🔹`). Drop nonsensical "continue?" rows.
 
-**Summary always at the end, clearly visible** — a short divider line, then bold
-`📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box):
+Full example:
 
 ```
-───────────
-📋 Summary: … 1–3 lines …
+✅ ERLEDIGT
+  🦀 Frontend lane       ██████████ 100%
+  🟦 Mock lane           ██████████ 100%
+
+🔄 LÄUFT
+  🟣 Tests lane          ██████░░░░  60%   🔎 prüfen
+
+👀 BITTE DRÜBERSCHAUEN
+  🧹 Dirty worktree      ████░░░░░░  40%   🔎 unsicher
+
+🚨 ALARM
+  💥 Auth broken — tokens expired, all lanes blocked — fix immediately
+
+❓ FRAGEN
+  Q1  Deploy target?
+      [1] managed ⭐   [2] self-host
+  Q2  Scope?
+      [3] optional module now ⭐   [4] later
 ```
 
 ## Drift watch & numbered questions
 
 Be **extremely sensitive to agent drift**. If a worker strays from the goal, does
 something nonsensical, loops, misunderstands the task, or builds something risky:
-flag it immediately as 🔴 (or 🚨 if critical), **pause/redirect the lane**, and
-**automatically launch an interactive-deep-research verification pass** ("is agent X
-really on the right path / making mistakes?"), then present a short recommendation.
-Better to over-question than to let an agent run wrong for hours.
+flag it immediately under 👀 BITTE DRÜBERSCHAUEN (or 🚨 ALARM if critical),
+**pause/redirect the lane**, and **automatically launch an interactive-deep-research
+verification pass** ("is agent X really on the right path / making mistakes?"), then
+present a short recommendation. Better to over-question than to let an agent run
+wrong for hours.
 
 Ask questions so the operator can answer with **numbers only** — every selectable
-option gets ONE unique, running number (never repeat 1/2 across questions). Put
-**🔵 directly before the numbers** so the eye jumps there. The recommendation is
-marked ⭐. Drop nonsensical "continue?" rows. The operator replies with just the
-number(s), e.g. "1 3". Example:
-
-```
-🔴 Port:    🔵 1) Hybrid-split ⭐   2) Provider ticket
-🔴 Proceed: 🔵 3) Autonomous ⭐     4) Adjust something
-→ reply e.g. "1 3"
-```
+option across *all* questions gets ONE unique running number (never restart at 1).
+Restate questions in ❓ FRAGEN at the end, answers in `[square brackets]`, ⭐ on the
+recommendation. Drop nonsensical "continue?" rows. The operator replies with just the
+number(s), e.g. `1 3`.
 
 ## Babysit loop
 

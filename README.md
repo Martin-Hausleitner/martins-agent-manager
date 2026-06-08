@@ -31,44 +31,59 @@ context → CC + Sonnet. agy limit irrelevant. If unsure which engine, ask the o
 
 ---
 
-## 📋 Report format
+## 📋 Report format — Variant A: sectioned report
 
-The manager reports as **one line per item** — **no Markdown table** (it renders
-buggy in CMUX) and no ASCII/box frames. Rows ordered **top → bottom** so the thing
-you must act on sits right above the prompt:
-
-1. 🟢 **Green** (top) — already done / on-track
-2. 🟡 **Yellow** (middle) — future risks / watch-outs
-3. 🔴/🚨 **Red/Alarm** (bottom) — **questions/decisions you must answer** (🚨 outranks 🔴)
-
-Each line: `<status> <bar> <pct>  <engine-icon> Topic — detail  · 🔎<conf> · <prio>`
-
-- **Status:** 🟢 ok · 🟡 risk · 🔴 bad/needs-question · 🚨 ALARM-urgent-act-now
-- **🔎 Confidence:** 🔎🟢 sure · 🔎🟡 unsure-review · 🔎🔴 very-unsure-check-by-hand
-- **Priority:** 🔺 high (all CC) · 🔸 mid · 🔹 low (agy)
-
-**Numbered questions:** put **🔵 directly before the numbers** so the eye jumps there.
-Every selectable option across *all* 🔴 rows gets ONE unique running number — never
-restart at 1 per question. Mark the recommendation with ⭐. Drop nonsensical
-"continue?" rows. The operator replies with just the number(s), e.g. `1 3`.
-
-**Summary always at the end, clearly visible** — a short divider line, then bold
-`📋 Summary:` + 1–3 lines (no `✦` emoji rows, no box).
-
-### Anonymised example
+The manager reports in **STATUS SECTIONS** — **no Markdown table** (renders buggy in
+CMUX) and no ASCII/box frames. Each section has a header emoji, slim indented lines,
+progress bar, and a confidence word. Questions are restated at the END with answers
+in [square brackets].
 
 ```
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🦀 Frontend lane — Spec #1 rendered + E2E green ✅  · 🔎🟢 · 🔺
-🟢 ▓▓▓▓▓▓▓▓▓▓ 100%  🟦 Mock lane — mock server scaffolded, README written 📄  · 🔎🟢 · 🔹
-🟡 ▓▓▓▓▓▓░░░░ 60%   🧹 Dirty worktree — 40 uncommitted files → commit before next spec ⚠️  · 🔎🟡 · 🔸
-🟡 ▓▓▓░░░░░░░ 30%   🔧 Tooling unverified — self-test running; self-heals on failure  · 🔎🟡 · 🔸
-🚨 ░░░░░░░░░░ 0%    💥 Auth broken — tokens expired, all lanes blocked  · 🔎🔴 · 🔺
-🔴 ░░░░░░░░░░ 0%    🚀 Deploy target — 🔵 1) managed ⭐  2) self-host?
-🔴 ░░░░░░░░░░ 0%    📦 Scope — 🔵 3) optional module now ⭐  4) later?
+✅ ERLEDIGT
+  <engine-icon> Thema       ██████████ 100%
+🔄 LÄUFT
+  <engine-icon> Thema       ██░░░░░░░░  20%   🔎 prüfen
+👀 BITTE DRÜBERSCHAUEN
+  <engine-icon> Thema       ███░░░░░░░  30%   🔎 unsicher
+🚨 ALARM            (nur wenn kritisch)
+  <engine-icon> Thema — was sofort zu tun ist
 
-───────────
-📋 Summary: 2 lanes building feature X (done); auth alarm needs immediate action.
-🔴 Open: deploy target + scope — reply with the numbers.
+❓ FRAGEN
+  Q1  <frage>
+      [1] … ⭐   [2] …   [3] …
+```
+
+- **Sections (in order):** ✅ ERLEDIGT · 🔄 LÄUFT · 👀 BITTE DRÜBERSCHAUEN ·
+  🚨 ALARM (only when truly critical, outranks all) · ❓ FRAGEN
+- **Progress:** bar + percent `██████░░░░ 60%` (10-block Unicode bars)
+- **Confidence word** (after bar): `sicher` · `prüfen` · `unsicher`
+- **Questions** restated at the END in ❓ FRAGEN; answers in `[square brackets]`
+  with `[1] … ⭐` on the recommended option. Running numbers never restart across
+  questions. Operator replies with just the number(s), e.g. `1 3`.
+- Engine icons: 🦀 cc-orange · 🟦 agy-blue · 🟣 codex-purple. Priority optional.
+  Drop nonsensical "continue?" rows.
+
+### Example
+
+```
+✅ ERLEDIGT
+  🦀 Frontend lane       ██████████ 100%
+  🟦 Mock lane           ██████████ 100%
+
+🔄 LÄUFT
+  🟣 Tests lane          ██████░░░░  60%   🔎 prüfen
+
+👀 BITTE DRÜBERSCHAUEN
+  🧹 Dirty worktree      ████░░░░░░  40%   🔎 unsicher
+
+🚨 ALARM
+  💥 Auth broken — tokens expired, all lanes blocked — fix immediately
+
+❓ FRAGEN
+  Q1  Deploy target?
+      [1] managed ⭐   [2] self-host
+  Q2  Scope?
+      [3] optional module now ⭐   [4] later
 ```
 
 ---
