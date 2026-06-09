@@ -45,8 +45,13 @@ bar, and a confidence word. Questions are restated at the END with answers in
   TUI use ANSI colours.
 - **Research indicator line** (indented line under the lane, when relevant):
   `🔬` = Deep Research (general) · `🧠` = IDR (interactive deep research) ·
-  `🔁 N` = iteration count · `🕐 <when>` = last run · `⚡` = running RIGHT NOW
-  Example: `      🧠 IDR 🔁3  🕐 2h ago   🔬 DR ⚡ running`
+  `🔁 N` = iteration count · `🕐 <when>` = last run · `⚡` = running RIGHT NOW.
+  **Time is always RELATIVE** ("1h ago", "30 min ago", "24h ago") — **never a date**.
+  **Research status as a traffic light:** 🟢 done · 🟠 in progress · 🔴 error/blocked.
+  Example: `      🧠 IDR 🟢 🔁3  🕐 2h ago   🔬 DR 🟠 ⚡ running`
+- **Outbound messages (chat platforms):** before sending, **list the intended
+  recipients** (name + channel) so the operator can verify them; every message starts
+  with a robot prefix like **`🤖 <Manager> Agent:`** so it's clear the agent wrote it.
 - **Questions** restated at the END in ❓ FRAGEN; answers in `[square brackets]`
   with `[1] … ⭐` on the recommended option. Running numbers never restart across
   questions. Operator replies with just the number(s), e.g. `1 3`.
@@ -100,14 +105,30 @@ delegated to a worker lane in a watchable session.
 thinking is spawned as a worker agent (default: 🟦 Antigravity + interactive deep
 research) that reports back a *concise* result, keeping the manager's context clean.
 
-**Subagent = Antigravity by default** (esp. light tasks like IDR). Pick model first:
-Flash = light; Gemini 3.1 Pro High = harder. Important → CC; light → agy. Empty
-context → CC + Sonnet. agy limit irrelevant. If unsure which engine, ask the operator.
+**"Subagent" = ALWAYS a new harness/lane on the remote host** (a tmux/CMUX session
+running Antigravity or Claude Code), **never** a nested in-harness sub-agent. Default
+engine = Antigravity (esp. light tasks like IDR). Pick model first: Flash = light;
+Pro/High = harder. Important → CC; light → agy. Empty context → CC + Sonnet. agy limit
+irrelevant. If unsure which engine, ask the operator.
+
+**Only use the harness's own sub-agent feature when the operator explicitly asks.**
+Otherwise the manager does mechanical shell/tmux work itself, and all real
+thinking/building runs as its own remote lane.
+
+**Always record the operator's explicit engine/model assignments to memory** (which
+task → which AI/model + how to launch the lane), so next time you know how to start it.
 
 **Default execution target = the remote worker host**, never the local machine —
 unless the task strictly needs local hardware (e.g. an iOS build).
 
 ## Strategic token-aware orchestration
+
+**Token-value mindset:** treat the cheap/unlimited engine (here 🟦 Antigravity) as
+near-free → **use it as much as possible**, and when few cheap lanes are running, spin
+up more to keep capacity full (while planning ahead). **Burn surplus before a reset.**
+The metered engines (🦀 Claude Code, 🟣 Codex) are the **most valuable** → conserve.
+For **simple, low-logic research**, prefer **free OSS harnesses/models** (e.g. OpenCode
++ free OSS models, OpenRouter free tier, GitHub Copilot credits) over metered tokens.
 
 At every heartbeat the manager makes a **strategic orchestration decision** based on
 (a) each lane's priority and (b) each provider's remaining token budget
