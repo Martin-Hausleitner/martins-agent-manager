@@ -40,16 +40,17 @@ in [square brackets].
 
 ```
 ✅ ERLEDIGT
-  <engine-icon> Thema       ██████████ 100%
+  <engine-icon> **Thema**       ██████████ 100%
 🔄 LÄUFT
-  <engine-icon> Thema       ██░░░░░░░░  20%   🔎 prüfen
+  <engine-icon> **Thema**       ██░░░░░░░░  20%   🔎 prüfen
+      🧠 IDR 🔁2  🕐 1h ago   🔬 DR ⚡ running
 👀 BITTE DRÜBERSCHAUEN
-  <engine-icon> Thema       ███░░░░░░░  30%   🔎 unsicher
-🚨 ALARM            (nur wenn kritisch)
-  <engine-icon> Thema — was sofort zu tun ist
+  <engine-icon> **Thema**       ███░░░░░░░  30%   🔎 unsicher
+🚨 ALARM            (critical only)
+  <engine-icon> **Thema** — what to do right now
 
 ❓ FRAGEN
-  Q1  <frage>
+  Q1  <question>
       [1] … ⭐   [2] …   [3] …
 ```
 
@@ -57,33 +58,45 @@ in [square brackets].
   🚨 ALARM (only when truly critical, outranks all) · ❓ FRAGEN
 - **Progress:** bar + percent `██████░░░░ 60%` (10-block Unicode bars)
 - **Confidence word** (after bar): `sicher` · `prüfen` · `unsicher`
+- **Bold** (`**…**`): important lane names / themes and key numbers so the operator
+  can scan fast.
+- **Colour:** chat reports use emoji + **bold** (Markdown); heartbeat TUI uses ANSI colours.
+- **Research indicator line** (indented line under the lane, when relevant):
+  `🔬` = Deep Research · `🧠` = IDR (interactive deep research) ·
+  `🔁 N` = iteration count · `🕐 <when>` = last run · `⚡` = running RIGHT NOW
+  Example: `      🧠 IDR 🔁3  🕐 2h ago   🔬 DR ⚡ running`
 - **Questions** restated at the END in ❓ FRAGEN; answers in `[square brackets]`
   with `[1] … ⭐` on the recommended option. Running numbers never restart across
   questions. Operator replies with just the number(s), e.g. `1 3`.
 - Engine icons: 🦀 cc-orange · 🟦 agy-blue · 🟣 codex-purple. Priority optional.
   Drop nonsensical "continue?" rows.
+- Short `📋 Summary:` after a `───` divider at the end.
 
 ### Example
 
 ```
 ✅ ERLEDIGT
-  🦀 Frontend lane       ██████████ 100%
-  🟦 Mock lane           ██████████ 100%
+  🦀 **Frontend lane**    ██████████ 100%
+  🟦 **Mock lane**        ██████████ 100%
 
 🔄 LÄUFT
-  🟣 Tests lane          ██████░░░░  60%   🔎 prüfen
+  🟣 **Tests lane**       ██████░░░░  60%   🔎 prüfen
+      🧠 IDR 🔁1  🕐 30min ago
 
 👀 BITTE DRÜBERSCHAUEN
-  🧹 Dirty worktree      ████░░░░░░  40%   🔎 unsicher
+  🧹 **Dirty worktree**   ████░░░░░░  40%   🔎 unsicher
 
 🚨 ALARM
-  💥 Auth broken — tokens expired, all lanes blocked — fix immediately
+  💥 **Auth broken** — tokens expired, all lanes blocked — fix immediately
 
 ❓ FRAGEN
   Q1  Deploy target?
       [1] managed ⭐   [2] self-host
   Q2  Scope?
       [3] optional module now ⭐   [4] later
+
+───
+📋 Summary: 2 done, 1 running (tests 60%), 1 needs review, 1 alarm. Auth must be fixed before deploy.
 ```
 
 ---
@@ -119,6 +132,23 @@ context stays clean and cheap. The manager only briefs, schedules, and synthesis
 
 **Default execution target = the remote worker host**, never the local machine —
 unless the task strictly needs local hardware (e.g. an iOS build).
+
+---
+
+## 💡 Strategic token-aware orchestration
+
+At every heartbeat the manager makes a **strategic orchestration decision** based on
+(a) each lane's **priority** and (b) each provider's **remaining token budget**
+(CodexBar-style: weekly / daily / session for Claude Code / Codex / Antigravity).
+
+**When a provider's budget runs low:**
+- Do **NOT** burn expensive tokens on re-questioning the current state — route
+  state-questions to NotebookLM/IDR instead (cheap).
+- **Stop or deprioritise low-priority lanes.**
+- Allocate the remaining high-value tokens to the **highest-priority lanes** only.
+- **Surface these routing decisions in the report** so the operator can see them.
+
+Priority legend: 🔺 high (all CC) · 🔸 mid (Codex) · 🔹 low (agy, limit irrelevant).
 
 ---
 
