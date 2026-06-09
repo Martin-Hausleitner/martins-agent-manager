@@ -25,9 +25,12 @@ see *who* is running.
 
 Watch/guard sessions stay neutral (grey).
 
-**Subagent = Antigravity by default** (esp. light tasks like IDR). Pick model first:
-Flash = light; Gemini 3.1 Pro High = harder. Important → CC; light → agy. Empty
-context → CC + Sonnet. agy limit irrelevant. If unsure which engine, ask the operator.
+**Subagent Selection**:
+- **Cheap/unlimited model**: Gemini 3.x Pro (High) via Antigravity (operator's "agy limit irrelevant" applies here).
+- **Metered/expensive model**: Claude (Sonnet/Opus) via Antigravity or Claude Code.
+- Important work -> Antigravity + Gemini 3.1 Pro (High) (immune to VM auto-reapers and settings prompts). Reserve Claude Code or agy-Claude-models for rare, critical tasks.
+- Empty context -> Claude Code with Sonnet.
+- If unsure, ask the operator.
 
 ---
 
@@ -43,7 +46,7 @@ in [square brackets].
   <engine-icon> **Thema**       ██████████ 100%
 🔄 LÄUFT
   <engine-icon> **Thema**       ██░░░░░░░░  20%   🔎 prüfen
-      🧠 IDR 🔁2  🕐 1h ago   🔬 DR ⚡ running
+      🧠 IDR 🔁2  🕐 1h ago   🔬 DR 🟢 ⚡ running [🛰]
 👀 BITTE DRÜBERSCHAUEN
   <engine-icon> **Thema**       ███░░░░░░░  30%   🔎 unsicher
 🚨 ALARM            (critical only)
@@ -63,8 +66,13 @@ in [square brackets].
 - **Colour:** chat reports use emoji + **bold** (Markdown); heartbeat TUI uses ANSI colours.
 - **Research indicator line** (indented line under the lane, when relevant):
   `🔬` = Deep Research · `🧠` = IDR (interactive deep research) ·
-  `🔁 N` = iteration count · `🕐 <when>` = last run · `⚡` = running RIGHT NOW
-  Example: `      🧠 IDR 🔁3  🕐 2h ago   🔬 DR ⚡ running`
+  `🔁 N` = iteration count · `🕐 <when>` = last run · `⚡` = running RIGHT NOW.
+  **Time is always RELATIVE** ("1h ago", "30min ago", "24h ago") — **never a date**.
+  **Research status as a traffic light:** 🟢 done · 🟠 in progress · 🔴 error/blocked.
+- **Location-Icons** indicate execution environment:
+  - `🛰` = remote VM / server lanes
+  - `💻` = Mac-local lanes
+  Example: `      🧠 IDR 🟢 🔁3  🕐 2h ago   🔬 DR 🟠 ⚡ running [🛰]`
 - **Questions** restated at the END in ❓ FRAGEN; answers in `[square brackets]`
   with `[1] … ⭐` on the recommended option. Running numbers never restart across
   questions. Operator replies with just the number(s), e.g. `1 3`.
@@ -80,11 +88,11 @@ in [square brackets].
   🟦 **Mock lane**        ██████████ 100%
 
 🔄 LÄUFT
-  🟣 **Tests lane**       ██████░░░░  60%   🔎 prüfen
-      🧠 IDR 🔁1  🕐 30min ago
+  🟣 **Tests lane**       ██████░░░░  60%   🔎 prüfen [🛰]
+      🧠 IDR 🟢 🔁1  🕐 30min ago
 
 👀 BITTE DRÜBERSCHAUEN
-  🧹 **Dirty worktree**   ████░░░░░░  40%   🔎 unsicher
+  🧹 **Dirty worktree**   ████░░░░░░  40%   🔎 unsicher [💻]
 
 🚨 ALARM
   💥 **Auth broken** — tokens expired, all lanes blocked — fix immediately
@@ -130,8 +138,9 @@ non-trivial thinking is **spawned as a worker agent** (default: 🟦 Antigravity
 interactive deep research) that reports back a **concise result**, so the manager's
 context stays clean and cheap. The manager only briefs, schedules, and synthesises.
 
-**Default execution target = the remote worker host**, never the local machine —
-unless the task strictly needs local hardware (e.g. an iOS build).
+- **Remote VM Tasks**: Delegated to sub-agents or tmux/CMUX sessions running on the remote VM.
+- **Mac-Local Tasks**: Spawns a local CMUX sub-session (e.g. `cmux workspace create --command "agy ..."`), rather than running it inside the manager's own shell directly.
+- **Default execution target = the remote VM**, never the local machine — unless the task strictly needs local hardware (e.g. an iOS build).
 
 ---
 
@@ -141,21 +150,22 @@ At every heartbeat the manager makes a **strategic orchestration decision** base
 (a) each lane's **priority** and (b) each provider's **remaining token budget**
 (CodexBar-style: weekly / daily / session for Claude Code / Codex / Antigravity).
 
-**When a provider's budget runs low:**
-- Do **NOT** burn expensive tokens on re-questioning the current state — route
-  state-questions to NotebookLM/IDR instead (cheap).
-- **Stop or deprioritise low-priority lanes.**
-- Allocate the remaining high-value tokens to the **highest-priority lanes** only.
-- **Surface these routing decisions in the report** so the operator can see them.
+**Token-Value Mindset:**
+- Cheap/unlimited tokens (Antigravity Gemini models) -> **use as much as possible**. Spin up more cheap lanes to keep capacity full. **Burn surplus usage before a quota reset.**
+- Metered tokens (Claude Code, Codex, agy-Claude-models) -> **conserve carefully**. Save for critical core tasks.
+- For simple, low-logic research, prefer **free OSS harnesses/models** (e.g. OpenCode + free models, OpenRouter free tier, GitHub Copilot credits) over metered tokens.
+- **Status check queries**: Do NOT burn expensive tokens on checking lane status; route status inquiries to NotebookLM/IDR instead (cheap).
+- Staging/Stopping: Stop or deprioritise low-priority lanes to allocate tokens to high-priority tasks. Surface these decisions in the report.
 
 Priority legend: 🔺 high (all CC) · 🔸 mid (Codex) · 🔹 low (agy, limit irrelevant).
 
 ---
 
-## 🔬 Research-first
+## 🔬 Research-first & NotebookLM
 
 Before planning anything new, **research first** to ground the plan — *before*
 specs/architecture/code.
+Any time a task is the *initial* step of a new project, feature, or plan request, IDR must fire first using the canonical NotebookLM notebooks (configured via the project's `.notebooklm/manifest.json` and saved in `<repo>/.notebooklm/`). Never start duplicate notebooks.
 
 ```mermaid
 flowchart LR
@@ -176,11 +186,41 @@ deciding criteria, and a **GitHub link per program**. Example shape:
 
 ---
 
+## 🕵️‍♂️ Beweis-Pflicht & Quality-Gate (Quality Gate Rule)
+
+When a lane reports "done" or the operator requests "beweise ...", the task is not finished. You must perform **1–2 extra verification rounds**:
+1. **Screenshots Required**: For UI, frontends, or E2E results, proof MUST be visual (screenshots).
+2. **Ablage**: Save screenshots in a `.proof/` folder in the repository. Filename must be **dated + descriptive** (e.g., `.proof/YYYY-MM-DD_feature-name.png`). Commit these to the repo.
+3. **Quality-Gate Agent**: Spawn a separate **Antigravity Quality-Gate lane** to review the proofs critically:
+   - Does it show **real data, not mock data/placeholders**?
+   - Check against the real backend / database. Demand file:line code traces.
+   - For revenue-facing or production products: **NEVER use mock/fake data or fallbacks**. If real data is blocked, report as blocked.
+4. **Done** only counts when the Quality-Gate confirms a `CONFIRMED` status (not `REFUTED`). Highlight proof status as:
+   - 🟢 verified
+   - 🟠 self-report only
+   - 🔴 mock-suspected
+
+---
+
+## 📋 Plannotator & long plans
+
+- **Lange Pläne**: Complex plans must automatically run through a **Plannotator pass** (generating Mermaid workflow/sequence diagrams, emojis, step-by-step checkboxes) before execution.
+
+---
+
+## 💻 local cmux controls (`skills/cmux-control/`)
+
+- Use `cmux` CLI commands locally to display rendered previews (markdown, URLs, websites, logs) in a dedicated right-side `📄 preview` workspace instead of pasting large blocks of text.
+- Follow the clean naming and coloring conventions for workspaces.
+- Supports Dock configurations and Custom SwiftUI Sidebars.
+
+---
+
 ## 📦 What's here
 
-- `skills/agent-manager/SKILL.md` — the reusable skill (drop into `~/.claude/skills/`).
-- `CLAUDE.md` — an anonymised excerpt of the global rules (report format + engine
-  legend + research-first).
+- `skills/agent-manager/SKILL.md` — the reusable skill for multi-agent manager orchestration.
+- `skills/cmux-control/SKILL.md` — local macOS workspace control and previews.
+- `CLAUDE.md` — anonymised user-global rules (reporting format, engine roster, research).
 
 ## License
 
