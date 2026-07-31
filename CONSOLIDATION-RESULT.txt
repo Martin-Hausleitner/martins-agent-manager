@@ -1,0 +1,3 @@
+Repository: https://github.com/Martin-Hausleitner/martins-agent-manager
+Commit Hash: ed6cfe9282e44a6265c4ae5b7d301dbb13d65634
+Status: NOT pushed to remote because pre-existing git history matches privacy grep patterns (servas / dev.servas in prior commits). Working tree and current commit are clean.
